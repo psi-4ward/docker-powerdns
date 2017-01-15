@@ -1,9 +1,9 @@
 # PowerDNS Docker Container
 
-[![Image Size](https://images.microbadger.com/badges/image/psitrax/powerdns.svg)]()
-[![Docker Stars](https://img.shields.io/docker/stars/psitrax/powerdns.svg)]()
-[![Docker Pulls](https://img.shields.io/docker/pulls/psitrax/powerdns.svg)]()
-[![Docker Automated buil](https://img.shields.io/docker/automated/psitrax/powerdns.svg)]()
+[![Image Size](https://images.microbadger.com/badges/image/psitrax/powerdns.svg)](https://microbadger.com/images/psitrax/powerdns)
+[![Docker Stars](https://img.shields.io/docker/stars/psitrax/powerdns.svg)](https://hub.docker.com/r/psitrax/powerdns/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/psitrax/powerdns.svg)](https://hub.docker.com/r/psitrax/powerdns/)
+[![Docker Automated buil](https://img.shields.io/docker/automated/psitrax/powerdns.svg)](https://hub.docker.com/r/psitrax/powerdns/)
 
 * Small Alpine based Image
 * MySQL (default), Postgres, SQLight and Bind backend included
