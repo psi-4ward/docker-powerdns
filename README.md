@@ -12,6 +12,12 @@
 * Guardian process enabled
 * Graceful shutdown using pdns_control
 
+## Supported tags
+
+* Exact: i.e. `4.0.2-r3`: PowerDNS Version 4.0.2, image build 3
+* `4.0`: PowerDNS Version 4.0.x, latest image build
+* `4`: PowerDNS Version 4.x.x, latest image build
+
 ## Usage
 
 ```shell
