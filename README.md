@@ -60,3 +60,8 @@ See `docker run --rm psitrax/powerdns --help`
 ## Maintainer
 
 * Christoph Wiechert <wio@psitrax.de>
+
+### Credits
+
+* Mathias Kaufmann <me@stei.gr>: Reduced image size
+
