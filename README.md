@@ -57,6 +57,11 @@ Append the PowerDNS setting to the command as shown in the example above.
 See `docker run --rm psitrax/powerdns --help`
 
 
+## License
+
+[GNU General Public License v2.0](https://github.com/PowerDNS/pdns/blob/master/COPYING) applyies to PowerDNS and all files in this repository.
+
+
 ## Maintainer
 
 * Christoph Wiechert <wio@psitrax.de>
