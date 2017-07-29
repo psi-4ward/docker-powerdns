@@ -3,7 +3,7 @@ set -e
 
 # --help, --version
 [ "$1" = "--help" ] || [ "$1" = "--version" ] && exec pdns_server $1
-# treat everything expect -- as exec cmd
+# treat everything except -- as exec cmd
 [ "${1:0:2}" != "--" ] && exec "$@"
 
 # Set MySQL Credentials in pdns.conf
