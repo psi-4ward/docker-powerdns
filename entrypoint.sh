@@ -23,7 +23,7 @@ if [ "$MYSQL_AUTOCONF" = 'true' ]; then
   unset -v SEDPROG
 fi
 
-MYSQLCMD="mysql -h '${MYSQL_HOST}' -u '${MYSQL_USER}' -p '${MYSQL_PASS}' -r -N"
+MYSQLCMD="mysql --host='${MYSQL_HOST}' --user='${MYSQL_USER}' --password='${MYSQL_PASS}' -r -N"
 
 # wait for Database come ready
 isDBup () {
