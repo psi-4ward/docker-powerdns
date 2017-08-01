@@ -10,13 +10,18 @@ ENV REFRESHED_AT="2017-05-17" \
     MYSQL_PASS="root" \
     MYSQL_DB="pdns"
 
-RUN apk --update add mysql-client mariadb-client-libs libpq sqlite-libs libstdc++ libgcc && \
+RUN apk --update add \
+      libstdc++ libgcc libressl libsodium boost-program_options \
+      mysql-client mariadb-client-libs mariadb-libs \
+      libpq postgresql-libs \
+      sqlite-libs lua && \
     apk add --virtual build-deps \
-      g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev && \
+      file g++ make mariadb-dev postgresql-dev sqlite-dev lua-dev libressl-dev boost-dev libsodium-dev curl && \
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
     cd /tmp/pdns-$POWERDNS_VERSION && \
     ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
-      --with-modules="bind gmysql gpgsql gsqlite3" --without-lua && \
+      --enable-libsodium --with-sqlite3 --enable-tools \
+      --with-modules="bind gmysql gpgsql gsqlite3" --with-dynmodules="pipe random lua remote" && \
     make && make install-strip && cd / && \
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
