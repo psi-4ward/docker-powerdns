@@ -14,7 +14,7 @@ if $MYSQL_AUTOCONF ; then
   sed -r -i "s/^[# ]*gmysql-password=.*/gmysql-password=${MYSQL_PASS}/g" /etc/pdns/pdns.conf
   sed -r -i "s/^[# ]*gmysql-dbname=.*/gmysql-dbname=${MYSQL_DB}/g" /etc/pdns/pdns.conf
 
-  MYSQLCMD="mysql --host='${MYSQL_HOST}' --user='${MYSQL_USER}' --password='${MYSQL_PASS}' -r -N"
+  MYSQLCMD="mysql --host=${MYSQL_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASS} -r -N"
 
   # wait for Database come ready
   isDBup () {
