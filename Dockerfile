@@ -1,8 +1,8 @@
 FROM alpine
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2018-05-21" \
-    POWERDNS_VERSION=4.1.2 \
+ENV REFRESHED_AT="2018-09-07" \
+    POWERDNS_VERSION=4.1.4 \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST="mysql" \
     MYSQL_PORT="3306" \
