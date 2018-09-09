@@ -1,7 +1,9 @@
-FROM alpine
+# Stick to libressl 2.6
+# https://github.com/PowerDNS/pdns/issues/6943
+FROM alpine:3.7
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2018-09-07" \
+ENV REFRESHED_AT="2018-09-09" \
     POWERDNS_VERSION=4.1.4 \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST="mysql" \
