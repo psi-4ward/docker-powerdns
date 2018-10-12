@@ -36,7 +36,7 @@ $ docker run --name pdns \
   -e MYSQL_PASS=supersecret \
   psitrax/powerdns \
     --cache-ttl=120 \
-    --allow-axfr-ips=127.0.0.1 123.1.2.3
+    --allow-axfr-ips=127.0.0.1,123.1.2.3
 ```
 
 ## Configuration
