@@ -3,7 +3,7 @@
 FROM alpine:3.7
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2018-11-08" \
+ENV REFRESHED_AT="2018-11-09" \
     POWERDNS_VERSION=4.1.5 \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST="mysql" \
@@ -25,7 +25,9 @@ RUN apk --update add libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-c
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
     adduser -S -D -H -h /var/empty -s /bin/false -G pdns -g pdns pdns 2>/dev/null && \
+    cp /usr/lib/libboost_program_options-mt.so* /tmp && \
     apk del --purge build-deps && \
+    mv /tmp/libboost_program_options-mt.so* /usr/lib/ && \
     rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
 
 ADD schema.sql pdns.conf /etc/pdns/
