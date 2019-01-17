@@ -6,7 +6,7 @@
 [![Docker Automated buil](https://img.shields.io/docker/automated/psitrax/powerdns.svg)](https://hub.docker.com/r/psitrax/powerdns/)
 
 * Small Alpine based Image
-* MySQL (default), Postgres, SQLight and Bind backend included
+* MySQL (default), Postgres, SQLite and Bind backend included
 * Automatic MySQL database initialization
 * Latest PowerDNS version (if not pls file an issue)
 * Guardian process enabled
