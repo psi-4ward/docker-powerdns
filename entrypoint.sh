@@ -9,6 +9,9 @@ set -e
 # treat everything except -- as exec cmd
 [ "${1:0:2}" != "--" ] && exec "$@"
 
+# Add backward compatibility
+[[ "$MYSQL_AUTOCONF" == false ]] && AUTOCONF=false
+
 # Set credentials to be imported into pdns.conf
 case "$AUTOCONF" in
   mysql)
@@ -56,7 +59,7 @@ isDBup () {
       echo "SELECT 1" | $PGSQLCMD 1>/dev/null
       echo $?
     ;;
-    gsqlite3)
+    *)
       echo 0
     ;;
   esac
