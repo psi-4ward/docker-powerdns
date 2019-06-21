@@ -14,7 +14,7 @@
 
 ## Supported tags
 
-* Exact: i.e. `4.1.7`: PowerDNS Version 4.1.7
+* Exact: i.e. `4.1.10`: PowerDNS Version 4.1.10
 * `4.0`: PowerDNS Version 4.0.x, latest image build
 * `4`: PowerDNS Version 4.x.x, latest image build
 
