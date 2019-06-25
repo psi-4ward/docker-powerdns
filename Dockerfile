@@ -3,7 +3,7 @@
 FROM alpine:3.7
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2019-06-21" \
+ENV REFRESHED_AT="2019-06-25" \
     POWERDNS_VERSION=4.1.10 \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST="mysql" \
