@@ -20,7 +20,7 @@ RUN apk --update add libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-c
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
     cd /tmp/pdns-$POWERDNS_VERSION && \
     ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
-      --with-modules="bind gmysql gpgsql gsqlite3" --without-lua && \
+      --with-modules="bind gmysql gpgsql gsqlite3" --without-lua --disable-lua-records && \
     make && make install-strip && cd / && \
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
