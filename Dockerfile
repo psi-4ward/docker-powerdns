@@ -12,7 +12,7 @@ ENV REFRESHED_AT="2019-08-13" \
     MYSQL_PASS="root" \
     MYSQL_DB="pdns"
 
-RUN apk --update add libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-connector-c-dev && \
+RUN apk --update add libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-connector-c-dev boost-program_options && \
     apk add --virtual build-deps \
       g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev && \
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
