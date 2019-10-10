@@ -1,10 +1,8 @@
-# Stick to libressl 2.6
-# https://github.com/PowerDNS/pdns/issues/6943
-FROM alpine:3.7
+FROM alpine:3.9
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2019-08-13" \
-    POWERDNS_VERSION=4.1.13 \
+ENV REFRESHED_AT="2019-10-10" \
+    POWERDNS_VERSION=4.2.0 \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST="mysql" \
     MYSQL_PORT="3306" \
@@ -12,15 +10,13 @@ ENV REFRESHED_AT="2019-08-13" \
     MYSQL_PASS="root" \
     MYSQL_DB="pdns"
 
-# alpine:3.8: mariadb-connector-c-dev
-
-RUN apk --update add libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-client-libs && \
+RUN apk --update add libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-connector-c && \
     apk add --virtual build-deps \
-      g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev && \
+      g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev mariadb-connector-c-dev && \
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
     cd /tmp/pdns-$POWERDNS_VERSION && \
     ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
-      --with-modules="bind gmysql gpgsql gsqlite3" --without-lua && \
+      --with-modules="bind gmysql gpgsql gsqlite3" --without-lua --disable-lua-records && \
     make && make install-strip && cd / && \
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
