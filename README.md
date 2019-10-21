@@ -49,9 +49,9 @@ $ docker run --name pdns \
   * `MYSQL_USER=root`
   * `MYSQL_PASS=root`
   * `MYSQL_DB=pdns`
-  * `MYSQL_DNSSEC=yes`
+  * `MYSQL_DNSSEC=no`
 * Want to disable mysql initialization? Use `MYSQL_AUTOCONF=false`
-* DNSSEC is disabled by default
+* DNSSEC is disabled by default, to enable use 'MYSQL_DNSSEC=yes'
 * Want to use own config files? Mount a Volume to `/etc/pdns/conf.d` or simply overwrite `/etc/pdns/pdns.conf`
 
 **PowerDNS Configuration:**
