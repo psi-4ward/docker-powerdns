@@ -2,7 +2,7 @@ FROM alpine:3.9
 
 LABEL \
   MAINTAINER="Christoph Wiechert <wio@psitrax.de>" \
-  CONTRIBUTORS="Mathias Kaufmann <me@stei.gr>"
+  CONTRIBUTORS="Mathias Kaufmann <me@stei.gr>, Cloudesire <cloduesire-dev@eng.it>"
 
 ENV REFRESHED_AT="2019-10-10" \
     POWERDNS_VERSION=4.3.1 \
