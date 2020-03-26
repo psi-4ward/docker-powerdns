@@ -1,5 +1,43 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+# source: https://github.com/docker-library/mariadb/blob/master/docker-entrypoint.sh
+file_env() {
+    local var="$1"
+    local fileVar="${var}_FILE"
+    local def="${2:-}"
+    if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+        echo "Both $var and $fileVar are set (but are exclusive)"
+        exit 1
+    fi
+    local val="$def"
+    if [ "${!var:-}" ]; then
+        val="${!var}"
+    elif [ "${!fileVar:-}" ]; then
+        val="$(< "${!fileVar}")"
+    fi
+    export "$var"="$val"
+    unset "$fileVar"
+}
+
+# Loads various settings that are used elsewhere in the script
+docker_setup_env() {
+    # Initialize values that might be stored in a file
+
+    file_env 'MYSQL_AUTOCONF' $MYSQL_DEFAULT_AUTOCONF
+    file_env 'MYSQL_HOST' $MYSQL_DEFAULT_HOST
+    file_env 'MYSQL_DNSSEC' 'no'
+    file_env 'MYSQL_DB' $MYSQL_DEFAULT_DB
+    file_env 'MYSQL_PASS' $MYSQL_DEFAULT_PASS
+    file_env 'MYSQL_USER' $MYSQL_DEFAULT_USER
+    file_env 'MYSQL_PORT' $MYSQL_DEFAULT_PORT
+}
+
+docker_setup_env
 
 # --help, --version
 [ "$1" = "--help" ] || [ "$1" = "--version" ] && exec pdns_server $1
@@ -7,12 +45,6 @@ set -e
 [ "${1:0:2}" != "--" ] && exec "$@"
 
 if $MYSQL_AUTOCONF ; then
-  if [ -z "$MYSQL_PORT" ]; then
-      MYSQL_PORT=3306
-  fi
-  if [ -z "$MYSQL_DNSSEC" ]; then
-      MYSQL_DNSSEC='no'
-  fi
   # Set MySQL Credentials in pdns.conf
   sed -r -i "s/^[# ]*gmysql-host=.*/gmysql-host=${MYSQL_HOST}/g" /etc/pdns/pdns.conf
   sed -r -i "s/^[# ]*gmysql-port=.*/gmysql-port=${MYSQL_PORT}/g" /etc/pdns/pdns.conf
