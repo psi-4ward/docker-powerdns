@@ -1,9 +1,27 @@
 version: "2.1"
 
 services:
+  # https://docs.docker.com/docker-hub/builds/automated-testing/
+  sut:
+    build:
+      context: ./.test
+      dockerfile: Dockerfile
+    command: sh /docker_test.sh
+    depends_on:
+      - pdns-server
+      - pdns-postgresql
+    environment:
+      # Tests setup
+      - PING_CONTAINER=pdns-server
+    volumes_from:
+      - pdns-server
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
   pdns-server:
     build: .
-    image: docker-powerdns
+    image: ${IMAGE_NAME}
     hostname: ${PDNS_HOST}
     container_name: ${PDNS_HOST}
     ports:
@@ -23,6 +41,7 @@ services:
       - PGSQL_USER=${PDNS_DB_USER}
       - PGSQL_PASS=${PDNS_DB_PASSWORD}
       - PGSQL_DNSSEC=no
+      # PDNS Config
       - PDNS_API=yes
       - PDNS_API_KEY=${PDNS_API_KEY}
       - PDNS_WEBSERVER_ADDRESS=0.0.0.0

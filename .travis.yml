@@ -12,18 +12,18 @@ branches:
 
 before_install:
   - env | sort
-  - export TAG=travis
   - export VCS_REF=`git rev-parse --short HEAD`
   - export BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-  - export name="pdns-server"
-  - export image="docker-powerdns"
+  - export CONTAINER_NAME="pdns-server"
+  - export TAG=travis
+  - export IMAGE_NAME="docker-powerdns:${TAG}"
   - export home=$(pwd)
   - export travis_dir="${home}/"
 
 install:
   - cd "$travis_dir"
   # Test container build
-  - travis_retry docker build -t "$image" "$travis_dir"
+  - travis_retry docker build -t "${IMAGE_NAME}" "$travis_dir"
 
 before_script:
   - docker images
@@ -31,37 +31,37 @@ before_script:
 script:
   - cd "$travis_dir"
   # Test container run
-  - docker run --rm --name "cmd_help" -e AUTOCONF=$AUTOCONF "$image" --help
-  #- docker run --rm --name "cmd_version" -e AUTOCONF=$AUTOCONF "$image" --version
-  - docker run --name "$name" -e AUTOCONF=$AUTOCONF -d "$image"
-  - docker ps | grep "$name"
-  - docker logs "$name"
-  - docker stop "$name" && docker rm -f "$name"
+  - docker run --rm --name "cmd_help" -e AUTOCONF=$AUTOCONF "${IMAGE_NAME}" --help
+  #- docker run --rm --name "cmd_version" -e AUTOCONF=$AUTOCONF "${IMAGE_NAME}" --version
+  - docker run --name "${CONTAINER_NAME}" -e AUTOCONF=$AUTOCONF -d "${IMAGE_NAME}"
+  - docker ps | grep "${CONTAINER_NAME}"
+  - docker logs "${CONTAINER_NAME}"
+  - docker stop "${CONTAINER_NAME}" && docker rm -f "${CONTAINER_NAME}"
   # Docker-compose tests
-  - mv docker-compose_$AUTOCONF.yml docker-compose.yml
+  - mv docker-compose.$AUTOCONF.test.yml docker-compose.yml
   - rm -f docker-compose_*.yml
   - travis_retry travis_wait 60 docker-compose build
   - docker images
   - travis_retry docker-compose up -d && sleep 30
   - docker-compose ps
   - docker-compose logs
-  - docker-compose ps "$name" | grep "Up"
+  - docker-compose ps "${CONTAINER_NAME}" | grep "Up"
   - echo 'Wait until everything ready (1-2 minutes)' && sleep 120
   - docker-compose ps
   - docker-compose logs
-  - docker-compose ps "$name" | grep "Up"
+  - docker-compose ps "${CONTAINER_NAME}" | grep "Up"
   - docker-compose down
   - travis_retry docker-compose up -d && sleep 30
   - echo 'Wait until everything ready (1-2 minutes)' && sleep 120
   - docker-compose ps
   - docker-compose logs
-  - docker-compose ps "$name" | grep "Up"
+  - docker-compose ps "${CONTAINER_NAME}" | grep "Up"
 
 notifications:
   email: false
 
 env: # Environments
     #- AUTOCONF=false
-    - AUTOCONF=sqlite
-    - AUTOCONF=postgres
+    #- AUTOCONF=sqlite
+    #- AUTOCONF=postgres
     - AUTOCONF=mysql

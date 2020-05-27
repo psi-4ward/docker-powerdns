@@ -1,9 +1,26 @@
 version: "2.1"
 
 services:
+  # https://docs.docker.com/docker-hub/builds/automated-testing/
+  sut:
+    build:
+      context: ./.test
+      dockerfile: Dockerfile
+    command: sh /docker_test.sh
+    depends_on:
+      - pdns-server
+    environment:
+      # Tests setup
+      - PING_CONTAINER=pdns-server
+    volumes_from:
+      - pdns-server
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
   pdns-server:
     build: .
-    image: docker-powerdns
+    image: ${IMAGE_NAME}
     hostname: ${PDNS_HOST}
     container_name: ${PDNS_HOST}
     ports:
