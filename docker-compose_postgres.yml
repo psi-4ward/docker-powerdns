@@ -1,0 +1,55 @@
+version: "2.1"
+
+services:
+  pdns-server:
+    build: .
+    image: docker-powerdns
+    hostname: ${PDNS_HOST}
+    container_name: ${PDNS_HOST}
+    ports:
+      - "5053:53"
+      - "5053:53/udp"
+    networks:
+      - default
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - AUTOCONF=postgres
+      # PostgreSQL
+      - PGSQL_HOST=${PDNS_DB_HOST}
+      - PGSQL_PORT=5432
+      - PGSQL_DB=${PDNS_DB_NAME}
+      - PGSQL_USER=${PDNS_DB_USER}
+      - PGSQL_PASS=${PDNS_DB_PASSWORD}
+      - PGSQL_DNSSEC=no
+      - PDNS_API=yes
+      - PDNS_API_KEY=${PDNS_API_KEY}
+      - PDNS_WEBSERVER_ADDRESS=0.0.0.0
+      - PDNS_WEBSERVER_PORT=8081
+      - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
+      - PDNS_SOA_REFRESH_DEFAULT=14400
+    depends_on:
+      - pdns-postgresql
+
+  pdns-postgresql:
+    image: postgres:10-alpine
+    hostname: ${PDNS_DB_HOST}
+    container_name: ${PDNS_DB_HOST}
+    restart: always
+    environment:
+      - POSTGRES_DB=${PDNS_DB_NAME}
+      - POSTGRES_USER=${PDNS_DB_USER}
+      - POSTGRES_PASSWORD=${PDNS_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${PDNS_DB_USER}"]
+    volumes:
+      - powerdns-postgresql-data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+networks:
+  default:
+
+volumes:
+  powerdns-postgresql-data:

@@ -1,0 +1,35 @@
+version: "2.1"
+
+services:
+  pdns-server:
+    build: .
+    image: docker-powerdns
+    hostname: ${PDNS_HOST}
+    container_name: ${PDNS_HOST}
+    ports:
+      - "5053:53"
+      - "5053:53/udp"
+    networks:
+      - default
+    volumes:
+      - powerdns-sqlite-data:/srv/pdns/db
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - AUTOCONF=sqlite
+      # SQLite
+      - SQLITE_DB=/srv/pdns/db/${PDNS_DB_NAME}
+      - SQLITE_DNSSEC=no
+      # PDNS Config
+      - PDNS_API=yes
+      - PDNS_API_KEY=${PDNS_API_KEY}
+      - PDNS_WEBSERVER_ADDRESS=0.0.0.0
+      - PDNS_WEBSERVER_PORT=8081
+      - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
+      - PDNS_SOA_REFRESH_DEFAULT=14400
+
+networks:
+  default:
+
+volumes:
+  powerdns-sqlite-data:
