@@ -16,7 +16,7 @@ before_install:
   - export BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
   - export CONTAINER_NAME="pdns-server"
   - export TAG=travis
-  - export IMAGE_NAME="docker-powerdns:${TAG}"
+  - export IMAGE_NAME="psitrax/powerdns:${TAG}"
   - export home=$(pwd)
   - export travis_dir="${home}/"
 
