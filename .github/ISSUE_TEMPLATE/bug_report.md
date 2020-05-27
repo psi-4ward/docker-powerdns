@@ -1,4 +1,5 @@
 ---
+
 name: Bug report
 about: Create a report to help us improve
 title: ''
@@ -20,6 +21,7 @@ Steps to reproduce the behavior:
 4. See error
 
 Provide Docker commands or docker-compose file if possible.
+
 ```sh
 echo "hello world"
 ```
@@ -40,9 +42,7 @@ A clear and concise description of what you expected to happen.
 
 If applicable, add logs to help explain your problem.
 
-```
-Console logs here...
-```
+    Console logs here...
 
 ## Screenshots
 
