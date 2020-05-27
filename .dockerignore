@@ -1,0 +1,5 @@
+# Ignore files during docker build
+docker-compose*.yml
+.idea
+.vscode
+.github
