@@ -42,7 +42,7 @@ $ docker run --name pdns \
 
 ## Configuration
 
-**Environment Configuration:**
+### Environment Configuration
 
 -   MySQL connection settings
     -   `MYSQL_HOST=mysql`
@@ -55,7 +55,7 @@ $ docker run --name pdns \
 -   DNSSEC is disabled by default, to enable use `MYSQL_DNSSEC=yes`
 -   Want to use own config files? Mount a Volume to `/etc/pdns/conf.d` or simply overwrite `/etc/pdns/pdns.conf`
 
-**PowerDNS Configuration:**
+### PowerDNS Configuration
 
 Append the PowerDNS setting to the command as shown in the example above.
 See `docker run --rm psitrax/powerdns --help`
