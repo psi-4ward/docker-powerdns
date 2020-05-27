@@ -32,4 +32,6 @@ ADD entrypoint.sh /
 
 EXPOSE 53/tcp 53/udp
 
+VOLUME [ "/etc/pdns/.docker" ]
+
 ENTRYPOINT ["/entrypoint.sh"]

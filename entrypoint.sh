@@ -80,12 +80,25 @@ if $MYSQL_AUTOCONF ; then
     echo Initializing Database
     cat /etc/pdns/schema.mysql.sql | $MYSQLCMD
 
+    echo "Storing database version"
+    echo "${POWERDNS_VERSION}" > /etc/pdns/.docker/db-version.txt
+
     # Run custom mysql post-init sql scripts
     if [ -d "/etc/pdns/mysql-postinit" ]; then
       for SQLFILE in $(ls -1 /etc/pdns/mysql-postinit/*.sql | sort) ; do
         echo Source $SQLFILE
         cat $SQLFILE | $MYSQLCMD
       done
+    fi
+  elif [ -f '/etc/pdns/.docker/db-version.txt' ]; then
+    DB_VERSION=$(cat '/etc/pdns/.docker/db-version.txt')
+
+    if [ -f "/etc/pdns/${DB_VERSION}_to_${POWERDNS_VERSION}_schema.mysql.sql" ]; then
+      echo "Updating Database from ${DB_VERSION} to ${POWERDNS_VERSION}"
+      cat "/etc/pdns/${DB_VERSION}_to_${POWERDNS_VERSION}_schema.mysql.sql" | $MYSQLCMD
+
+      echo "Updating database version"
+      echo "${POWERDNS_VERSION}" > /etc/pdns/.docker/db-version.txt
     fi
   fi
 
