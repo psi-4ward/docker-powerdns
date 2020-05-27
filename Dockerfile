@@ -18,6 +18,7 @@ RUN apk --update add bash libpq sqlite-libs libstdc++ libgcc mariadb-client mari
     ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
       --with-modules="bind gmysql gpgsql gsqlite3" && \
     make && make install-strip && cd / && \
+    cp ./modules/gmysqlbackend/*schema.mysql.sql /etc/pdns/ && \
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
     adduser -S -D -H -h /var/empty -s /bin/false -G pdns -g pdns pdns 2>/dev/null && \
@@ -26,7 +27,7 @@ RUN apk --update add bash libpq sqlite-libs libstdc++ libgcc mariadb-client mari
     mv /tmp/lib* /usr/lib/ && \
     rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
 
-ADD schema.sql pdns.conf /etc/pdns/
+ADD pdns.conf /etc/pdns/
 ADD entrypoint.sh /
 
 EXPOSE 53/tcp 53/udp
