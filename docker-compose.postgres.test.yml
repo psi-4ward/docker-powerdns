@@ -35,7 +35,7 @@ services:
     environment:
       - AUTOCONF=postgres
       # PostgreSQL
-      - PGSQL_HOST=${PDNS_DB_HOST}
+      - PGSQL_HOST=pdns-postgresql
       - PGSQL_PORT=5432
       - PGSQL_DB=${PDNS_DB_NAME}
       - PGSQL_USER=${PDNS_DB_USER}
@@ -53,8 +53,8 @@ services:
 
   pdns-postgresql:
     image: postgres:10-alpine
-    hostname: ${PDNS_DB_HOST}
-    container_name: ${PDNS_DB_HOST}
+    hostname: pdns-postgresql
+    container_name: pdns-postgresql
     restart: always
     environment:
       - POSTGRES_DB=${PDNS_DB_NAME}

@@ -36,7 +36,7 @@ services:
       - MYSQL_AUTOCONF=true
       #- AUTOCONF=mysql
       # MySQL / MariaDB
-      - MYSQL_HOST=${PDNS_DB_HOST}
+      - MYSQL_HOST=pdns-mysql
       - MYSQL_PORT=3306
       - MYSQL_DB=${PDNS_DB_NAME}
       - MYSQL_USER=${PDNS_DB_USER}
@@ -55,8 +55,8 @@ services:
 
   pdns-mysql:
     image: mariadb:10.3
-    hostname: ${PDNS_DB_HOST}
-    container_name: ${PDNS_DB_HOST}
+    hostname: pdns-mysql
+    container_name: pdns-mysql
     mem_limit: 256M
     memswap_limit: 256M
     expose:
