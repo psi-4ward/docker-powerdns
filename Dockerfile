@@ -15,6 +15,7 @@ RUN apk --update add bash libpq sqlite-libs libstdc++ libgcc mariadb-client mari
       g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev mariadb-connector-c-dev && \
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
     cd /tmp/pdns-$POWERDNS_VERSION && \
+    mkdir -p /etc/pdns/ && \
     cp ./modules/gmysqlbackend/*schema.mysql.sql /etc/pdns/ && \
     ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
       --with-modules="bind gmysql gpgsql gsqlite3" && \
