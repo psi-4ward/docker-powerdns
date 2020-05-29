@@ -38,8 +38,10 @@ services:
       - SQLITE_DB=/srv/pdns/db/${PDNS_DB_NAME}
       - SQLITE_DNSSEC=no
       # PDNS Config
+      - PDNS_LOG_DNS_QUERIES=yes
       - PDNS_API=yes
       - PDNS_API_KEY=${PDNS_API_KEY}
+      - PDNS_WEBSERVER=no
       - PDNS_WEBSERVER_ADDRESS=0.0.0.0
       - PDNS_WEBSERVER_PORT=8081
       - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
