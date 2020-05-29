@@ -14,7 +14,7 @@ before_install:
   - env | sort
   - export VCS_REF=`git rev-parse --short HEAD`
   - export BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-  - export CONTAINER_NAME="pdns-server"
+  - export CONTAINER_NAME="pdns-server-${AUTOCONF}"
   - export TAG=travis
   - export IMAGE_NAME="psitrax/powerdns:${TAG}"
   - export home=$(pwd)
@@ -30,14 +30,14 @@ before_script:
 
 script:
   - cd "$travis_dir"
-  # Test container run
+  # Test docker run
   - docker run --rm --name "cmd_help" -e AUTOCONF=$AUTOCONF "${IMAGE_NAME}" --help
   #- docker run --rm --name "cmd_version" -e AUTOCONF=$AUTOCONF "${IMAGE_NAME}" --version
   - docker run --name "${CONTAINER_NAME}" -e AUTOCONF=$AUTOCONF -d "${IMAGE_NAME}"
   - docker ps | grep "${CONTAINER_NAME}"
   - docker logs "${CONTAINER_NAME}"
   - docker stop "${CONTAINER_NAME}" && docker rm -f "${CONTAINER_NAME}"
-  # Docker-compose tests
+  # Test docker-compose run
   - mv docker-compose.$AUTOCONF.test.yml docker-compose.yml
   - rm -f docker-compose_*.yml
   - travis_retry travis_wait 60 docker-compose build
@@ -50,12 +50,17 @@ script:
   - docker-compose ps
   - docker-compose logs
   - docker-compose ps "${CONTAINER_NAME}" | grep "Up"
+  - docker-compose logs "sut"
+  - docker-compose ps "sut" | grep "Exit 0"
+  # Test docker-compose restart
   - docker-compose down
   - travis_retry docker-compose up -d && sleep 30
   - echo 'Wait until everything ready (1-2 minutes)' && sleep 120
   - docker-compose ps
   - docker-compose logs
   - docker-compose ps "${CONTAINER_NAME}" | grep "Up"
+  - docker-compose logs "sut"
+  - docker-compose ps "sut" | grep "Exit 0"
 
 notifications:
   email: false

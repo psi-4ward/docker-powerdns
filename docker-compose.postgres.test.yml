@@ -8,27 +8,27 @@ services:
       dockerfile: Dockerfile
     command: sh /docker_test.sh
     depends_on:
-      - pdns-server
+      - pdns-server-postgres
       - pdns-postgresql
     environment:
       # Tests setup
-      - PING_CONTAINER=pdns-server
+      - PING_CONTAINER=pdns-server-postgres
     volumes_from:
-      - pdns-server
+      - pdns-server-postgres
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
-  pdns-server:
+  pdns-server-postgres:
     build: .
     image: ${IMAGE_NAME}
     hostname: ${PDNS_HOST}
-    container_name: ${PDNS_HOST}
+    container_name: pdns-server-postgres
     ports:
       - "5053:53"
       - "5053:53/udp"
     networks:
-      - default
+      - pdns-compose-pgsql
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -49,7 +49,7 @@ services:
       - PDNS_WEBSERVER_ADDRESS=0.0.0.0
       - PDNS_WEBSERVER_PORT=8081
       - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
-      - PDNS_SOA_REFRESH_DEFAULT=14400
+      - PDNS_SOA_REFRESH_pdns-compose-pgsql=14400
     depends_on:
       - pdns-postgresql
 
@@ -58,6 +58,8 @@ services:
     hostname: pdns-postgresql
     container_name: pdns-postgresql
     restart: always
+    expose:
+      - 5432
     environment:
       - POSTGRES_DB=${PDNS_DB_NAME}
       - POSTGRES_USER=${PDNS_DB_USER}
@@ -70,7 +72,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
 
 networks:
-  default:
+  pdns-compose-pgsql:
 
 volumes:
   powerdns-postgresql-data:

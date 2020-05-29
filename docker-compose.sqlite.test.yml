@@ -8,26 +8,26 @@ services:
       dockerfile: Dockerfile
     command: sh /docker_test.sh
     depends_on:
-      - pdns-server
+      - pdns-server-sqlite
     environment:
       # Tests setup
-      - PING_CONTAINER=pdns-server
+      - PING_CONTAINER=pdns-server-sqlite
     volumes_from:
-      - pdns-server
+      - pdns-server-sqlite
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
-  pdns-server:
+  pdns-server-sqlite:
     build: .
     image: ${IMAGE_NAME}
     hostname: ${PDNS_HOST}
-    container_name: ${PDNS_HOST}
+    container_name: pdns-server-sqlite
     ports:
       - "5053:53"
       - "5053:53/udp"
     networks:
-      - default
+      - pdns-compose-sqlite
     volumes:
       - powerdns-sqlite-data:/srv/pdns/db
       - /etc/localtime:/etc/localtime:ro
@@ -45,10 +45,10 @@ services:
       - PDNS_WEBSERVER_ADDRESS=0.0.0.0
       - PDNS_WEBSERVER_PORT=8081
       - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
-      - PDNS_SOA_REFRESH_DEFAULT=14400
+      - PDNS_SOA_REFRESH_pdns-compose-sqlite=14400
 
 networks:
-  default:
+  pdns-compose-sqlite:
 
 volumes:
   powerdns-sqlite-data:
