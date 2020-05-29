@@ -15,6 +15,8 @@ services:
       - PING_CONTAINER=pdns-server-mysql
     volumes_from:
       - pdns-server-mysql
+    networks:
+      - pdns-compose-mysql
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -50,7 +52,7 @@ services:
       - PDNS_WEBSERVER_ADDRESS=0.0.0.0
       - PDNS_WEBSERVER_PORT=8081
       - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
-      - PDNS_SOA_REFRESH_pdns-compose-mysql=14400
+      - PDNS_SOA_REFRESH_DEFAULT=14400
     depends_on:
       pdns-mysql:
         condition: service_healthy
@@ -63,6 +65,8 @@ services:
     memswap_limit: 256M
     expose:
       - 3306
+    networks:
+      - pdns-compose-mysql
     volumes:
       - powerdns-mysql-data:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
