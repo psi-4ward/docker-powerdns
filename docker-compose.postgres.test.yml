@@ -26,9 +26,10 @@ services:
     image: ${IMAGE_NAME}
     hostname: ${PDNS_HOST}
     container_name: pdns-server-postgres
-    ports:
-      - "5053:53"
-      - "5053:53/udp"
+    # If ports need to be redirected or exposed to host
+    #ports:
+    #  - "5053:53"
+    #  - "5053:53/udp"
     networks:
       - pdns-compose-pgsql
     volumes:
