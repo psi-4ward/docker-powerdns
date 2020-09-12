@@ -35,6 +35,7 @@ $ docker run --name pdns \
   -p 53:53/udp \
   -e MYSQL_USER=root \
   -e MYSQL_PASS=supersecret \
+  -e MYSQL_PORT=3306 \
   psitrax/powerdns \
     --cache-ttl=120 \
     --allow-axfr-ips=127.0.0.1,123.1.2.3
