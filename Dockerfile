@@ -1,8 +1,7 @@
 FROM alpine:3.9
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2020-05-24" \
-    POWERDNS_VERSION=4.3.0 \
+ENV POWERDNS_VERSION=4.3.1 \
     MYSQL_DEFAULT_AUTOCONF=true \
     MYSQL_DEFAULT_HOST="mysql" \
     MYSQL_DEFAULT_PORT="3306" \
