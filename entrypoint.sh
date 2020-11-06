@@ -88,7 +88,7 @@ case "$PDNS_LAUNCH" in
     MYSQLCMD="$MYSQLCMD $MYSQL_DB"
     if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"$MYSQL_DB\";" | $MYSQLCMD)" -le 1 ]; then
       echo Initializing Database
-      cat /etc/pdns/mysql.schema.sql | $MYSQLCMD
+      cat /etc/pdns/sql/schema.mysql.sql | $MYSQLCMD
       # Run custom mysql post-init sql scripts
       if [ -d "/etc/pdns/mysql-postinit" ]; then
         for SQLFILE in $(ls -1 /etc/pdns/mysql-postinit/*.sql | sort) ; do
@@ -105,13 +105,13 @@ case "$PDNS_LAUNCH" in
     PGSQLCMD="$PGSQLCMD $PGSQL_DB"
     if [[ -z "$(printf '\dt' | $PGSQLCMD -qAt)" ]]; then
       echo Initializing Database
-      cat /etc/pdns/pgsql.schema.sql | $PGSQLCMD
+      cat /etc/pdns/sql/schema.pgsql.sql | $PGSQLCMD
     fi
   ;;
   gsqlite3)
     if [[ ! -f "$PDNS_GSQLITE3_DATABASE" ]]; then
       install -D -d -o pdns -g pdns -m 0755 $(dirname $PDNS_GSQLITE3_DATABASE)
-      cat /etc/pdns/sqlite3.schema.sql | sqlite3 $PDNS_GSQLITE3_DATABASE
+      cat /etc/pdns/sql/schema.sqlite3.sql | sqlite3 $PDNS_GSQLITE3_DATABASE
       chown pdns:pdns $PDNS_GSQLITE3_DATABASE
     fi
   ;;
