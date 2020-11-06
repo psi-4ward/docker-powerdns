@@ -95,7 +95,7 @@ $ docker run --name pdns \
   * `PGSQL_DB=pdns`
 * SQLite connection settings
   * `SQLITE_DB=/pdns.sqlite3`
-* DNSSEC is disabled by default, to enable use `MYSQL_DNSSEC=yes`
+* DNSSEC is disabled by default, to enable use `DNSSEC=yes`
 * Want to disable database initialization? Use `AUTOCONF=false`
 * Want to apply 12Factor-Pattern? Apply environment variables of the form `PDNS_$pdns-config-variable=$config-value`, like `PDNS_WEBSERVER=yes`
 * Want to use own config files? Mount a Volume to `/etc/pdns/conf.d` or simply overwrite `/etc/pdns/pdns.conf`
