@@ -89,13 +89,6 @@ case "$PDNS_LAUNCH" in
     if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"$MYSQL_DB\";" | $MYSQLCMD)" -le 1 ]; then
       echo Initializing Database
       cat /etc/pdns/sql/schema.mysql.sql | $MYSQLCMD
-      # Run custom mysql post-init sql scripts
-      if [ -d "/etc/pdns/mysql-postinit" ]; then
-        for SQLFILE in $(ls -1 /etc/pdns/mysql-postinit/*.sql | sort) ; do
-          echo Source $SQLFILE
-          cat $SQLFILE | $MYSQLCMD
-        done
-      fi
     fi
   ;;
   gpgsql)
