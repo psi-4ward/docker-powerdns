@@ -47,6 +47,7 @@ esac
 
 MYSQLCMD="mysql -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASS -r -N"
 PGSQLCMD="psql --host=$PGSQL_HOST --username=$PGSQL_USER"
+SQLITECMD="sqlite3 $PDNS_GSQLITE3_DATABASE"
 
 # wait for Database come ready
 isDBup () {
@@ -89,6 +90,29 @@ case "$PDNS_LAUNCH" in
     if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"$MYSQL_DB\";" | $MYSQLCMD)" -le 1 ]; then
       echo Initializing Database
       cat /etc/pdns/sql/schema.mysql.sql | $MYSQLCMD
+      INITIAL_DB_VERSION=$MYSQL_VERSION
+    fi
+    if [ "$AUTO_SCHEMA_MIGRATION" == "yes" ]; then
+      # init version database if necessary
+      if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"$MYSQL_DB\" and table_name = \"$SCHEMA_VERSION_TABLE\";" | $MYSQLCMD)" -eq 0 ]; then
+        [ -z "$INITIAL_DB_VERSION" ] && >&2 echo "Error: INITIAL_DB_VERSION is required when you use AUTO_SCHEMA_MIGRATION for the first time" && exit 1
+        echo "CREATE TABLE $SCHEMA_VERSION_TABLE (id INT AUTO_INCREMENT primary key NOT NULL, version VARCHAR(255) NOT NULL) Engine=InnoDB CHARACTER SET 'latin1';" | $MYSQLCMD
+        echo "INSERT INTO $SCHEMA_VERSION_TABLE (version) VALUES ('$INITIAL_DB_VERSION');" | $MYSQLCMD
+        echo "Initialized schema version to $INITIAL_DB_VERSION"
+      fi
+      # do the database upgrade
+      while true; do
+        current="$(echo "SELECT version FROM $SCHEMA_VERSION_TABLE ORDER BY id DESC LIMIT 1;" | $MYSQLCMD)"
+        if [ "$current" != "$MYSQL_VERSION" ]; then
+          filename=/etc/pdns/sql/${current}_to_*_schema.mysql.sql
+          echo "Applying Update $(basename $filename)"
+          $MYSQLCMD < $filename
+          current=$(basename $filename | sed -n 's/^[0-9.]\+_to_\([0-9.]\+\)_.*$/\1/p')
+          echo "INSERT INTO $SCHEMA_VERSION_TABLE (version) VALUES ('$current');" | $MYSQLCMD
+        else
+          break
+        fi
+      done
     fi
   ;;
   gpgsql)
@@ -99,13 +123,60 @@ case "$PDNS_LAUNCH" in
     if [[ -z "$(printf '\dt' | $PGSQLCMD -qAt)" ]]; then
       echo Initializing Database
       cat /etc/pdns/sql/schema.pgsql.sql | $PGSQLCMD
+      INITIAL_DB_VERSION=$PGSQL_VERSION
+    fi
+    if [ "$AUTO_SCHEMA_MIGRATION" == "yes" ]; then
+      # init version database if necessary
+      if [[ -z "$(echo "SELECT to_regclass('public.$SCHEMA_VERSION_TABLE');" | $PGSQLCMD -qAt)" ]]; then
+        [ -z "$INITIAL_DB_VERSION" ] && >&2 echo "Error: INITIAL_DB_VERSION is required when you use AUTO_SCHEMA_MIGRATION for the first time" && exit 1
+        echo "CREATE TABLE $SCHEMA_VERSION_TABLE (id SERIAL PRIMARY KEY, version VARCHAR(255) DEFAULT NULL)" | $PGSQLCMD
+        echo "INSERT INTO $SCHEMA_VERSION_TABLE (version) VALUES ('$INITIAL_DB_VERSION');" | $PGSQLCMD
+        echo "Initialized schema version to $INITIAL_DB_VERSION"
+      fi
+      # do the database upgrade
+      while true; do
+        current="$(echo "SELECT version FROM $SCHEMA_VERSION_TABLE ORDER BY id DESC LIMIT 1;" | $PGSQLCMD -qAt)"
+        if [ "$current" != "$PGSQL_VERSION" ]; then
+          filename=/etc/pdns/sql/${current}_to_*_schema.pgsql.sql
+          echo "Applying Update $(basename $filename)"
+          $PGSQLCMD < $filename
+          current=$(basename $filename | sed -n 's/^[0-9.]\+_to_\([0-9.]\+\)_.*$/\1/p')
+          echo "INSERT INTO $SCHEMA_VERSION_TABLE (version) VALUES ('$current');" | $PGSQLCMD
+        else
+          break
+        fi
+      done
     fi
   ;;
   gsqlite3)
     if [[ ! -f "$PDNS_GSQLITE3_DATABASE" ]]; then
       install -D -d -o pdns -g pdns -m 0755 $(dirname $PDNS_GSQLITE3_DATABASE)
-      cat /etc/pdns/sql/schema.sqlite3.sql | sqlite3 $PDNS_GSQLITE3_DATABASE
+      cat /etc/pdns/sql/schema.sqlite3.sql | $SQLITECMD
       chown pdns:pdns $PDNS_GSQLITE3_DATABASE
+      INITIAL_DB_VERSION=$SQLITE_VERSION
+    fi
+    if [ "$AUTO_SCHEMA_MIGRATION" == "yes" ]; then
+      # init version database if necessary
+      if [[ "$(echo "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='$SCHEMA_VERSION_TABLE';" | $SQLITECMD)" -eq 0 ]]; then
+        [ -z "$INITIAL_DB_VERSION" ] && >&2 echo "Error: INITIAL_DB_VERSION is required when you use AUTO_SCHEMA_MIGRATION for the first time" && exit 1
+        echo "CREATE TABLE $SCHEMA_VERSION_TABLE (id INTEGER PRIMARY KEY, version VARCHAR(255) NOT NULL)" | $SQLITECMD
+        echo "INSERT INTO $SCHEMA_VERSION_TABLE (version) VALUES ('$INITIAL_DB_VERSION');" | $SQLITECMD
+        echo "Initialized schema version to $INITIAL_DB_VERSION"
+      fi
+      # do the database upgrade
+      while true; do
+        current="$(echo "SELECT version FROM $SCHEMA_VERSION_TABLE ORDER BY id DESC LIMIT 1;" | $SQLITECMD)"
+        if [ "$current" != "$SQLITE_VERSION" ]; then
+          filename=/etc/pdns/sql/${current}_to_*_schema.sqlite3.sql
+          echo "Applying Update $(basename $filename)"
+          $SQLITECMD < $filename
+          current=$(basename $filename | sed -n 's/^[0-9.]\+_to_\([0-9.]\+\)_.*$/\1/p')
+          echo "INSERT INTO $SCHEMA_VERSION_TABLE (version) VALUES ('$current');" | $SQLITECMD
+        else
+          break
+        fi
+      done
+
     fi
   ;;
 esac

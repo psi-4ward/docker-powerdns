@@ -30,18 +30,23 @@ LABEL \
   CONTRIBUTORS="Mathias Kaufmann <me@stei.gr>, Cloudesire <cloduesire-dev@eng.it>"
 
 ENV AUTOCONF=mysql \
+    AUTO_SCHEMA_MIGRATION="no" \
     MYSQL_HOST="mysql" \
     MYSQL_PORT="3306" \
     MYSQL_USER="root" \
     MYSQL_PASS="root" \
     MYSQL_DB="pdns" \
     MYSQL_DNSSEC="no" \
+    MYSQL_VERSION="4.3.0" \
     PGSQL_HOST="postgres" \
     PGSQL_PORT="5432" \
     PGSQL_USER="postgres" \
     PGSQL_PASS="postgres" \
     PGSQL_DB="pdns" \
-    SQLITE_DB="pdns.sqlite3"
+    PGSQL_VERSION="4.3.0" \
+    SQLITE_DB="pdns.sqlite3" \
+    SQLITE_VERSION="4.3.1" \
+    SCHEMA_VERSION_TABLE="_schema_version"
 
 EXPOSE 53/tcp 53/udp
 ADD pdns.conf /etc/pdns/

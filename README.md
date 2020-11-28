@@ -7,6 +7,7 @@
 
 * Small Alpine based Image
 * MySQL (default), Postgres, SQLite and Bind backend included
+* Automatic migration of database schema (for MySQL, Postgres and SQLite)
 * DNSSEC support optional
 * Automatic database initialization for MySQL, Postgres and SQLite
 * Latest PowerDNS version (if not pls file an issue)
@@ -97,6 +98,10 @@ $ docker run --name pdns \
   * `SQLITE_DB=/pdns.sqlite3`
 * DNSSEC is disabled by default, to enable use `DNSSEC=yes`
 * Want to disable database initialization? Use `AUTOCONF=false`
+  * Want to disable automatic migration of database schema? Use `AUTO_SCHEMA_MIGRATION=no`
+  * If this option is enabled afterwards on an existing installation, set `INITIAL_DB_VERSION=x.y.z`
+    where x.y.z is the version of the schema currently installed on the database.
+    This variable can be safely removed once the database has been upgraded for the first time.
 * Want to apply 12Factor-Pattern? Apply environment variables of the form `PDNS_$pdns-config-variable=$config-value`, like `PDNS_WEBSERVER=yes`
 * Want to use own config files? Mount a Volume to `/etc/pdns/conf.d` or simply overwrite `/etc/pdns/pdns.conf`
 * Use `TRACE=true` to debug the pdns config directives
