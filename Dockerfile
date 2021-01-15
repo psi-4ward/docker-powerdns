@@ -1,5 +1,4 @@
 FROM alpine:3.9
-MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
 ENV POWERDNS_VERSION=4.3.1 \
     MYSQL_DEFAULT_AUTOCONF=true \
@@ -31,3 +30,30 @@ ADD entrypoint.sh /
 EXPOSE 53/tcp 53/udp
 
 ENTRYPOINT ["/entrypoint.sh"]
+
+ARG VCS_REF
+ARG BUILD_DATE
+
+# Container labels (http://label-schema.org/)
+# Container annotations (https://github.com/opencontainers/image-spec)
+LABEL maintainer="Christoph Wiechert <wio@psitrax.de>" \
+      product="PowerDNS" \
+      version=$POWERDNS_VERSION \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/psi-4ward/docker-powerdns" \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="PowerDNS" \
+      org.label-schema.description="Open source DNS software." \
+      org.label-schema.url="https://www.powerdns.com/" \
+      org.label-schema.vendor="PowerDNS.COM BV" \
+      org.label-schema.version=$POWERDNS_VERSION \
+      org.label-schema.schema-version="1.0" \
+      org.opencontainers.image.revision=$VCS_REF \
+      org.opencontainers.image.source="https://github.com/psi-4ward/docker-powerdns" \
+      org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.title="PowerDNS" \
+      org.opencontainers.image.description="Open source DNS software." \
+      org.opencontainers.image.url="https://www.powerdns.com/" \
+      org.opencontainers.image.vendor="PowerDNS.COM BV" \
+      org.opencontainers.image.version=$POWERDNS_VERSION \
+      org.opencontainers.image.authors="Christoph Wiechert <wio@psitrax.de>"
