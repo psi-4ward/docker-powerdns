@@ -1,7 +1,7 @@
-FROM alpine:3.9
+FROM alpine:3.13
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV POWERDNS_VERSION=4.3.1 \
+ENV POWERDNS_VERSION=4.4.1 \
     MYSQL_DEFAULT_AUTOCONF=true \
     MYSQL_DEFAULT_HOST="mysql" \
     MYSQL_DEFAULT_PORT="3306" \
@@ -20,9 +20,7 @@ RUN apk --update add bash libpq sqlite-libs libstdc++ libgcc mariadb-client mari
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
     adduser -S -D -H -h /var/empty -s /bin/false -G pdns -g pdns pdns 2>/dev/null && \
-    cp /usr/lib/libboost_program_options-mt.so* /tmp && \
     apk del --purge build-deps && \
-    mv /tmp/lib* /usr/lib/ && \
     rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
 
 ADD schema.sql pdns.conf /etc/pdns/
