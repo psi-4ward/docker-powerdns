@@ -1,0 +1,92 @@
+version: "2.1"
+
+services:
+  # https://docs.docker.com/docker-hub/builds/automated-testing/
+  sut:
+    build:
+      context: ./.test
+      dockerfile: Dockerfile
+    command: sh /docker_test.sh
+    depends_on:
+      - pdns-server-mysql
+      - pdns-mysql
+    environment:
+      # Tests setup
+      - PING_CONTAINER=pdns-server-mysql
+    volumes_from:
+      - pdns-server-mysql
+    networks:
+      - pdns-compose-mysql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  pdns-server-mysql:
+    build: .
+    image: ${IMAGE_NAME}
+    hostname: ${PDNS_HOST}
+    container_name: pdns-server-mysql
+    # If ports need to be redirected or exposed to host
+    #ports:
+    #  - "5053:53"
+    #  - "5053:53/udp"
+    networks:
+      - pdns-compose-mysql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - MYSQL_AUTOCONF=true
+      #- AUTOCONF=mysql
+      # MySQL / MariaDB
+      - MYSQL_HOST=pdns-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DB=${PDNS_DB_NAME}
+      - MYSQL_USER=${PDNS_DB_USER}
+      - MYSQL_PASS=${PDNS_DB_PASSWORD}
+      - MYSQL_DNSSEC=no
+      # PDNS Config
+      - PDNS_LOG_DNS_QUERIES=yes
+      - PDNS_API=yes
+      - PDNS_API_KEY=${PDNS_API_KEY}
+      - PDNS_WEBSERVER=no
+      - PDNS_WEBSERVER_ADDRESS=0.0.0.0
+      - PDNS_WEBSERVER_PORT=8081
+      - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
+      - PDNS_SOA_REFRESH_DEFAULT=14400
+    depends_on:
+      pdns-mysql:
+        condition: service_healthy
+
+  pdns-mysql:
+    image: mariadb:10.3
+    hostname: pdns-mysql
+    container_name: pdns-mysql
+    mem_limit: 256M
+    memswap_limit: 256M
+    expose:
+      - 3306
+    networks:
+      - pdns-compose-mysql
+    volumes:
+      - powerdns-mysql-data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - pdns-compose-mysql
+    command: --character_set_client=utf8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake=FALSE
+    environment:
+      - MYSQL_DATABASE=${PDNS_DB_NAME}
+      - MYSQL_USER=${PDNS_DB_USER}
+      - MYSQL_PASSWORD=${PDNS_DB_PASSWORD}
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+networks:
+  pdns-compose-mysql:
+
+volumes:
+  powerdns-mysql-data:
