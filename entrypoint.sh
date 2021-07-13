@@ -78,7 +78,10 @@ if $MYSQL_AUTOCONF ; then
 
   if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"$MYSQL_DB\";" | $MYSQLCMD)" -le 1 ]; then
     echo Initializing Database
-    cat /etc/pdns/schema.sql | $MYSQLCMD
+    cat /etc/pdns/schema.mysql.sql | $MYSQLCMD
+
+    echo "Storing database version"
+    echo "${POWERDNS_VERSION}" > /etc/pdns/.docker/db-version.txt
 
     # Run custom mysql post-init sql scripts
     if [ -d "/etc/pdns/mysql-postinit" ]; then
@@ -86,6 +89,16 @@ if $MYSQL_AUTOCONF ; then
         echo Source $SQLFILE
         cat $SQLFILE | $MYSQLCMD
       done
+    fi
+  elif [ -f '/etc/pdns/.docker/db-version.txt' ]; then
+    DB_VERSION=$(cat '/etc/pdns/.docker/db-version.txt')
+
+    if [ -f "/etc/pdns/${DB_VERSION}_to_${POWERDNS_VERSION}_schema.mysql.sql" ]; then
+      echo "Updating Database from ${DB_VERSION} to ${POWERDNS_VERSION}"
+      cat "/etc/pdns/${DB_VERSION}_to_${POWERDNS_VERSION}_schema.mysql.sql" | $MYSQLCMD
+
+      echo "Updating database version"
+      echo "${POWERDNS_VERSION}" > /etc/pdns/.docker/db-version.txt
     fi
   fi
 
