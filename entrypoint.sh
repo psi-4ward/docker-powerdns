@@ -75,7 +75,8 @@ if $MYSQL_AUTOCONF ; then
   # init database if necessary
   echo "CREATE DATABASE IF NOT EXISTS $MYSQL_DB;" | $MYSQLCMD
   MYSQLCMD="$MYSQLCMD $MYSQL_DB"
-
+  
+  # -le flag is used to prevent usage of incompletely applied schema
   if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"$MYSQL_DB\";" | $MYSQLCMD)" -le 1 ]; then
     echo Initializing Database
     cat /etc/pdns/schema.sql | $MYSQLCMD
