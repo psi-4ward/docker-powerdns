@@ -15,9 +15,11 @@
 
 ## Supported tags
 
-* Exact: i.e. `4.4.1`: PowerDNS Version 4.4.1
-* `4.0`: PowerDNS Version 4.0.x, latest image build
-* `4`: PowerDNS Version 4.x.x, latest image build
+* Exact: i.e. `v4.4.1`: PowerDNS Version 4.4.1
+* `v4.0`: PowerDNS Version 4.0.x, latest image build
+* `v4`: PowerDNS Version 4.x.x, latest image build
+
+Note: Some older tags don't have the `v` at the beginning (e.g. for Version 4.1.7 the tag is `4.1.7`)
 
 ## Usage
 
