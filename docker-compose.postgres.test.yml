@@ -1,0 +1,83 @@
+version: "2.1"
+
+services:
+  # https://docs.docker.com/docker-hub/builds/automated-testing/
+  sut:
+    build:
+      context: ./.test
+      dockerfile: Dockerfile
+    command: sh /docker_test.sh
+    depends_on:
+      - pdns-server-postgres
+      - pdns-postgresql
+    environment:
+      # Tests setup
+      - PING_CONTAINER=pdns-server-postgres
+    volumes_from:
+      - pdns-server-postgres
+    networks:
+      - pdns-compose-pgsql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  pdns-server-postgres:
+    build: .
+    image: ${IMAGE_NAME}
+    hostname: ${PDNS_HOST}
+    container_name: pdns-server-postgres
+    # If ports need to be redirected or exposed to host
+    #ports:
+    #  - "5053:53"
+    #  - "5053:53/udp"
+    networks:
+      - pdns-compose-pgsql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - AUTOCONF=postgres
+      # PostgreSQL
+      - PGSQL_HOST=pdns-postgresql
+      - PGSQL_PORT=5432
+      - PGSQL_DB=${PDNS_DB_NAME}
+      - PGSQL_USER=${PDNS_DB_USER}
+      - PGSQL_PASS=${PDNS_DB_PASSWORD}
+      - PGSQL_DNSSEC=no
+      # PDNS Config
+      - PDNS_LOG_DNS_QUERIES=yes
+      - PDNS_API=yes
+      - PDNS_API_KEY=${PDNS_API_KEY}
+      - PDNS_WEBSERVER=no
+      - PDNS_WEBSERVER_ADDRESS=0.0.0.0
+      - PDNS_WEBSERVER_PORT=8081
+      - PDNS_WEBSERVER_ALLOW_FROM=${PDNS_WEBSERVER_ALLOW_FROM}/0
+      - PDNS_SOA_REFRESH_DEFAULT=14400
+    depends_on:
+      - pdns-postgresql
+
+  pdns-postgresql:
+    image: postgres:10-alpine
+    hostname: pdns-postgresql
+    container_name: pdns-postgresql
+    restart: always
+    expose:
+      - 5432
+    networks:
+      - pdns-compose-pgsql
+    environment:
+      - POSTGRES_DB=${PDNS_DB_NAME}
+      - POSTGRES_USER=${PDNS_DB_USER}
+      - POSTGRES_PASSWORD=${PDNS_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${PDNS_DB_USER}"]
+    volumes:
+      - powerdns-postgresql-data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+networks:
+  pdns-compose-pgsql:
+
+volumes:
+  powerdns-postgresql-data:
