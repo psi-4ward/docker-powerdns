@@ -1,0 +1,55 @@
+version: "3"
+
+services:
+  mysql:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - mysql_volume:/var/lib/mysql
+
+  psql:
+    image: postgres:13
+    environment:
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - psql_volume:/var/lib/postgresql
+
+  pdns_mysql:
+    image: cybiox9/powerdns
+    environment:
+      AUTOCONF: mysql
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASS: secret
+    command:
+      - --cache-ttl=120
+      - --allow-axfr-ips=127.0.0.1,123.1.2.3
+
+  pdns_psql:
+    image: cybiox9/powerdns
+    environment:
+      AUTOCONF: postgres
+      PGSQL_HOST: psql
+      PGSQL_USER: postgres
+      PGSQL_PASS: secret
+    command:
+      - --cache-ttl=120
+      - --allow-axfr-ips=127.0.0.1,123.1.2.3
+
+  pdns_sqlite:
+    image: cybiox9/powerdns
+    environment:
+      AUTOCONF: sqlite
+      SQLITE_DB: /data/db.sqlite
+    command:
+      - --cache-ttl=120
+      - --allow-axfr-ips=127.0.0.1,123.1.2.3
+    volumes:
+      - sqlite_volume:/data
+
+volumes:
+  mysql_volume: {}
+  psql_volume: {}
+  sqlite_volume: {} 
+
