@@ -3,13 +3,16 @@ CREATE TABLE domains (
   name                  VARCHAR(255) NOT NULL,
   master                VARCHAR(128) DEFAULT NULL,
   last_check            INT DEFAULT NULL,
-  type                  VARCHAR(6) NOT NULL,
+  type                  VARCHAR(8) NOT NULL,
   notified_serial       INT UNSIGNED DEFAULT NULL,
   account               VARCHAR(40) CHARACTER SET 'utf8' DEFAULT NULL,
+  options               VARCHAR(64000) DEFAULT NULL,
+  catalog               VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (id)
 ) Engine=InnoDB CHARACTER SET 'latin1';
 
 CREATE UNIQUE INDEX name_index ON domains(name);
+CREATE INDEX catalog_idx ON domains(catalog);
 
 
 CREATE TABLE records (
@@ -87,3 +90,17 @@ CREATE TABLE tsigkeys (
 ) Engine=InnoDB CHARACTER SET 'latin1';
 
 CREATE UNIQUE INDEX namealgoindex ON tsigkeys(name, algorithm);
+
+/*
+Using this SQL causes Mysql to create foreign keys on your database. This will
+make sure that no records, comments or keys exists for domains that you already
+removed. This is not enabled by default, because we're not sure what the
+consequences are from a performance point of view. If you do have feedback,
+please let us know how this affects your setup.
+Please note that it's not possible to apply this, before you cleaned up your
+database, as the foreign keys do not exist.
+*/
+ALTER TABLE records ADD CONSTRAINT `records_domain_id_ibfk` FOREIGN KEY (`domain_id`) REFERENCES `domains` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE comments ADD CONSTRAINT `comments_domain_id_ibfk` FOREIGN KEY (`domain_id`) REFERENCES `domains` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE domainmetadata ADD CONSTRAINT `domainmetadata_domain_id_ibfk` FOREIGN KEY (`domain_id`) REFERENCES `domains` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE cryptokeys ADD CONSTRAINT `cryptokeys_domain_id_ibfk` FOREIGN KEY (`domain_id`) REFERENCES `domains` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
