@@ -9,6 +9,8 @@ ENV POWERDNS_VERSION=4.7.2 \
     MYSQL_DEFAULT_PASS="root" \
     MYSQL_DEFAULT_DB="pdns"
 
+RUN sed -r -i 's/dl-cdn\.alpinelinux\.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 RUN apk --update add bash libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-connector-c lua-dev curl-dev && \
     apk add --virtual build-deps \
       g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev mariadb-connector-c-dev && \
