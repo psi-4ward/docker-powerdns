@@ -1,4 +1,4 @@
-FROM alpine:3.15
+FROM alpine:3.17
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
 ENV POWERDNS_VERSION=4.6.0 \
